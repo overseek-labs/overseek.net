@@ -1,51 +1,44 @@
+# DevOps Experts at Your Service
 
-## About us:
+## Introduction
 
-We provide full-scale web applications engineering services to deliver future-oriented and quality-driven products and solutions that are not only market disruptive but user-centric as well.
-Accelerating innovation using the latest cutting-edge technology, we’re solving complex challenges and engineering products made to suit each enterprise ecosystem.
+We are a team of DevOps experts, passionate about technology and committed to transforming businesses through digitalization. With extensive experience across industries like education, wall art printing, and e-commerce, we create reliable, scalable, and high-impact solutions that drive growth and efficiency.
 
-### We are using
+From enterprise-grade APIs to powerful, custom web applications, we have what it takes to deliver cutting-edge technology that empowers your business. Whether it's public-facing applications or internal infrastructure, our team makes technology work for you.
 
-TypeScript, ReactJS, Node.js, Next.js, NestJS, GraphQL, Apollo
-Microservice Architecture Patterns, Docker, Gitlab CI/CD, Magento 2
+## How We Can Help
 
+Our solutions extend to providing robust self-hosted infrastructure, either on-premise or in the cloud, to ensure your business maintains complete control over its data. We build and manage scalable, secure infrastructure tailored to meet your specific operational needs, enabling you to keep sensitive workloads in-house or in a private cloud for enhanced privacy and compliance.
 
-## We are hiring
+Our team specializes in streamlining operations, improving productivity, and enhancing user experiences with tailored digital solutions. We help businesses:
 
-### About this job
-```markdown
+- **Self-Hosted Secure LLM Instance:** We offer self-hosted Large Language Model (LLM) solutions that enable you to process sensitive data, such as contracts, NDAs, and product secrets, in a secure environment. By hosting LLM internally, you maintain complete control over your data, minimizing the risk of leaks and ensuring full compliance with data privacy requirements.
+- **Automate Manual Processes:** We identify areas where manual processes can be replaced with digital workflows, reducing human error and saving time.
+- **Scale Infrastructure Efficiently:** Our expertise with cloud platforms like AWS and containerization technologies such as Docker allows us to create scalable, resilient infrastructure that grows with your business.
+- **Improve System Security:** We implement secure Single Sign-On (SSO) solutions, such as Authentik OAuth, to centralize user authentication and authorization, ensuring consistent access control across all of your systems. This approach not only enhances security by reducing the attack surface but also improves the user experience by simplifying access management for employees, partners, and customers. Our SSO solutions help you protect sensitive data while enabling seamless, user-friendly access.
+- **Custom Application Development:** From APIs to full-fledged web applications, we build custom solutions tailored to your unique needs, helping you achieve specific business objectives.
+- **Enhance Customer Experience:** We use modern frameworks like React and Next.js to build intuitive, responsive web applications that keep your customers engaged.
+- **Optimize Costs:** We help you leverage cloud services and containerization to reduce infrastructure costs, ensuring you get the best value without compromising on performance or reliability.
+- **Continuous Integration and Deployment (CI/CD):** We set up CI/CD pipelines to ensure that your applications are always up to date, enabling rapid development cycles and reducing time-to-market for your products.
+- **Monitoring and Maintenance:** We provide ongoing monitoring and maintenance to ensure your infrastructure and applications run smoothly, identifying and resolving issues before they impact your business.
+- **Data-Driven Insights:** Using advanced analytics and monitoring tools, we help you gain actionable insights into system performance and user behavior, driving informed decision-making.
 
-Job type: 		Full-time
-Experience level: 	Mid-Level, Senior
-Role: 			Full Stack Developer
-Industry: 		Educational Technology (EduTech)
-Location: 		Oradea, Bihor
-E-mail: 		info@overseek.net
-```
+## Technologies We Use
 
-### Job description
+- Typescript
+- Next.js
+- React
+- Nest.js
+- GraphQL
+- API Gateway
+- Docker
+- AWS
+- Authentik OAuth
+- Magento e-commerce
+- Mistral LLM
 
-We're looking for an awesome Full Stack Developer to join our team and work with us on bringing online, an evidence-based Social and Emotional learning (SEL) program used in schools worldwide. This project is part of the Educational Technology (EduTech) field and working on it you will take part in the innovations that we will bring to the industry using machine learning and modern web technologies. You'll be working on a microservices designed infrastructure based on Apollo GraphQL, NextJs, NestJs, TypeORM and other cool frameworks.
+## Contact Us
 
-Our development team advocates for the software craftsmanship approach that emphasizes the coding skills of the software developers. This briefly means you will do professional software development by practicing it and helping others learn the craft and value well-crafted software, you will be adding value to the team and help building a community of professionals looking for constant improvement in their personal and team work.
+If you have any questions or would like to learn more about how we can help your business, please don't hesitate to reach out. You can contact us at: info@overseek.net
 
-It’s important to understand that we value the balance between quality of work and business and if this is one of your beliefs, feel free to apply to this job or message us if you need more details.
-
-### About the client
-Positive Action is an educational program that is used worldwide in a variety of settings from traditional school settings to counseling programs. It is a market leader for Social and Emotional Learning materials. Designed to create a positive learning environment for students, Positive Action has enabled thousands of organizations to cultivate an intrinsic interest in learning. The Company has a close-knit team developing a highly specialized content delivery platform that will be localized in multiple languages.
-
-### Benefits
-
-At Overseek, we’re always investing in a work-life balance and body-mind health. We want our employees to love it here.
-
-Get the freedom you need to work at your best – with plenty of time for what matters to you most. We offer flexible work schedules, opportunities to work from home, time off for volunteering, and so much more to keep you healthy, safe, and productive. Working from the office, you will get to work from a premium stand-up desk, fully set-up and access to unlimited coffee, tea and snacks. Team and staying-social integration available through at least two team-building events per year, where at least one is international.
-
-- Flexible working hours
-- Team buildings
-- Competitive salary
-- As much leave as needed by team members
-- A friendly and talented team that wants you to succeed
-- Remote work friendly
-- Exposure to brand new emerging technologies
-- Brand new laptop
-- [Ergoliv standing desk](https://ergoliv.com/shop/)
+We look forward to hearing from you!
