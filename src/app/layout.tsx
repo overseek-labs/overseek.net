@@ -21,17 +21,136 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Overseek — Engineering That Delivers",
+  metadataBase: new URL("https://overseek.net"),
+  title: {
+    default: "Overseek — Engineering That Delivers",
+    template: "%s | Overseek",
+  },
   description:
-    "We are a team of senior engineers who build, scale, and secure the infrastructure behind ambitious products. DevOps, AI, Cloud, and Custom Software.",
+    "Senior engineers building production-grade infrastructure, AI platforms, and custom software — from architecture to deployment. DevOps, Cloud, AI & Full-Stack.",
+  keywords: [
+    "software engineering",
+    "DevOps",
+    "cloud infrastructure",
+    "AI development",
+    "RAG pipeline",
+    "AWS consulting",
+    "custom software development",
+    "Next.js development",
+    "full-stack engineering",
+    "IT consulting",
+    "Docker",
+    "CI/CD",
+    "machine learning",
+    "enterprise software",
+    "Overseek",
+  ],
+  authors: [{ name: "Overseek", url: "https://overseek.net" }],
+  creator: "Overseek",
+  publisher: "Overseek",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
-    title: "Overseek — Engineering That Delivers",
-    description:
-      "Senior engineers building infrastructure for ambitious products.",
+    type: "website",
+    locale: "en_US",
     url: "https://overseek.net",
     siteName: "Overseek",
-    type: "website",
+    title: "Overseek — Engineering That Delivers",
+    description:
+      "Senior engineers building production-grade infrastructure, AI platforms, and custom software — from architecture to deployment.",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Overseek — Engineering That Delivers",
+    description:
+      "Senior engineers building production-grade infrastructure, AI platforms, and custom software.",
+    creator: "@overseek",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "https://overseek.net",
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://overseek.net/#organization",
+      name: "Overseek",
+      url: "https://overseek.net",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://overseek.net/overseek-logo.svg",
+      },
+      description:
+        "Senior engineers building production-grade infrastructure, AI platforms, and custom software — from architecture to deployment.",
+      foundingDate: "2018",
+      sameAs: [],
+      contactPoint: {
+        "@type": "ContactPoint",
+        email: "info@overseek.net",
+        contactType: "customer service",
+      },
+      knowsAbout: [
+        "Cloud Infrastructure",
+        "DevOps",
+        "AI Development",
+        "RAG Pipelines",
+        "Custom Software Development",
+        "AWS",
+        "Docker",
+        "Next.js",
+        "React",
+        "Node.js",
+        "Machine Learning",
+        "CI/CD",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://overseek.net/#website",
+      url: "https://overseek.net",
+      name: "Overseek",
+      publisher: { "@id": "https://overseek.net/#organization" },
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://overseek.net/#webpage",
+      url: "https://overseek.net",
+      name: "Overseek — Engineering That Delivers",
+      isPartOf: { "@id": "https://overseek.net/#website" },
+      about: { "@id": "https://overseek.net/#organization" },
+      description:
+        "Senior engineers building production-grade infrastructure, AI platforms, and custom software — from architecture to deployment.",
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://overseek.net/#service",
+      name: "Overseek Engineering Services",
+      provider: { "@id": "https://overseek.net/#organization" },
+      serviceType: [
+        "Cloud Infrastructure & DevOps",
+        "AI & Machine Learning Solutions",
+        "Custom Software Development",
+      ],
+      areaServed: "Worldwide",
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -41,6 +160,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${satoshi.variable} ${jetbrainsMono.variable} font-[family-name:var(--font-sans)] antialiased`}
       >
