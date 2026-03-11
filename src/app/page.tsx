@@ -2,6 +2,7 @@ import { ScrollProgress } from "@/components/scroll-progress";
 import { Navigation } from "@/components/navigation";
 import { Hero } from "@/components/hero";
 import { Services } from "@/components/services";
+import { Automation } from "@/components/automation";
 import { About } from "@/components/about";
 import { Work } from "@/components/work";
 import { LogoMarquee } from "@/components/logo-marquee";
@@ -17,6 +18,7 @@ export default function Home() {
       <Navigation />
       <Hero />
       <Services />
+      <Automation />
       <About />
       <Work />
       <LogoMarquee />
