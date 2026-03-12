@@ -125,26 +125,6 @@ function Arrow({ from, to, progress }: { from: string; to: string; progress: num
   );
 }
 
-function Particle({ from, to, t }: { from: string; to: string; t: number }) {
-  const fn = NODES.find(n => n.id === from);
-  const tn = NODES.find(n => n.id === to);
-  if (!fn || !tn) return null;
-  const x1 = fn.x+CARD_W/2, y1 = fn.y+CARD_H/2;
-  const x2 = tn.x+CARD_W/2, y2 = tn.y+CARD_H/2;
-  const dx = x2-x1, dy = y2-y1, len = Math.sqrt(dx*dx+dy*dy);
-  const nx = -dy/len*len*0.18, ny = dx/len*len*0.18;
-  const qx = (x1+x2)/2+nx, qy = (y1+y2)/2+ny;
-  const mt = 1-t;
-  const px = mt*mt*x1 + 2*mt*t*qx + t*t*x2;
-  const py = mt*mt*y1 + 2*mt*t*qy + t*t*y2;
-  return (
-    <g>
-      <circle cx={px} cy={py} r={3} fill={C.caramel} opacity={0.8} />
-      <circle cx={px} cy={py} r={6} fill={C.caramel} opacity={0.12} />
-    </g>
-  );
-}
-
 function SuccessBadge({ show }: { show: boolean }) {
   const [visible, setVisible] = useState(false);
   const [fading, setFading] = useState(false);
@@ -229,20 +209,38 @@ function Card({ node, visible, active, showBadge }: { node: NodeDef; visible: bo
   );
 }
 
+function getParticlePos(from: string, to: string, t: number) {
+  const fn = NODES.find(n => n.id === from);
+  const tn = NODES.find(n => n.id === to);
+  if (!fn || !tn) return { px: 0, py: 0 };
+  const x1 = fn.x+CARD_W/2, y1 = fn.y+CARD_H/2;
+  const x2 = tn.x+CARD_W/2, y2 = tn.y+CARD_H/2;
+  const dx = x2-x1, dy = y2-y1, len = Math.sqrt(dx*dx+dy*dy);
+  const nx = -dy/len*len*0.18, ny = dx/len*len*0.18;
+  const qx = (x1+x2)/2+nx, qy = (y1+y2)/2+ny;
+  const mt = 1-t;
+  return {
+    px: mt*mt*x1 + 2*mt*t*qx + t*t*x2,
+    py: mt*mt*y1 + 2*mt*t*qy + t*t*y2,
+  };
+}
+
 export function WorkflowAnimation() {
   const { cam, moveTo, reset } = useCamera();
 
   const [edgeProgress, setEdgeProgress] = useState<Record<string, number>>({});
   const [activeNode,   setActiveNode]   = useState<string | null>("webhook");
   const [visibleNodes, setVisibleNodes] = useState(new Set(["webhook"]));
-  const [particles,    setParticles]    = useState<{ from: string; to: string; t: number; id: string }[]>([]);
   const [badges,       setBadges]       = useState(new Set<string>());
 
+  const containerRef = useRef<HTMLDivElement>(null);
   const timers       = useRef<ReturnType<typeof setTimeout>[]>([]);
   const particleRaf  = useRef<number>(0);
   const particleState= useRef<Record<string, number>>({});
   const activeEdges  = useRef<string[]>([]);
   const loopTimer    = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isVisible    = useRef(true);
+  const particleGroupRef = useRef<SVGGElement>(null);
 
   const clearAll = useCallback(() => {
     timers.current.forEach(clearTimeout);
@@ -276,13 +274,38 @@ export function WorkflowAnimation() {
     edgeIds.forEach(id => { if (!particleState.current[id]) particleState.current[id] = Math.random(); });
     cancelAnimationFrame(particleRaf.current);
     const loop = () => {
+      if (!isVisible.current) return;
+      const g = particleGroupRef.current;
+      if (!g) { particleRaf.current = requestAnimationFrame(loop); return; }
+
       activeEdges.current.forEach(id => {
         particleState.current[id] = ((particleState.current[id] || 0) + 0.007) % 1;
       });
-      setParticles(activeEdges.current.map(id => {
+
+      while (g.children.length > activeEdges.current.length * 2) g.removeChild(g.lastChild!);
+      while (g.children.length < activeEdges.current.length * 2) {
+        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        g.appendChild(c);
+      }
+
+      activeEdges.current.forEach((id, i) => {
         const edge = EDGES.find(e => `${e.from}-${e.to}` === id);
-        return edge ? { ...edge, t: particleState.current[id], id } : null;
-      }).filter((p): p is { from: string; to: string; t: number; id: string; phase: number } => p !== null));
+        if (!edge) return;
+        const { px, py } = getParticlePos(edge.from, edge.to, particleState.current[id]);
+        const core = g.children[i * 2] as SVGCircleElement;
+        const glow = g.children[i * 2 + 1] as SVGCircleElement;
+        core.setAttribute("cx", String(px));
+        core.setAttribute("cy", String(py));
+        core.setAttribute("r", "3");
+        core.setAttribute("fill", C.caramel);
+        core.setAttribute("opacity", "0.8");
+        glow.setAttribute("cx", String(px));
+        glow.setAttribute("cy", String(py));
+        glow.setAttribute("r", "6");
+        glow.setAttribute("fill", C.caramel);
+        glow.setAttribute("opacity", "0.12");
+      });
+
       particleRaf.current = requestAnimationFrame(loop);
     };
     particleRaf.current = requestAnimationFrame(loop);
@@ -302,10 +325,11 @@ export function WorkflowAnimation() {
     setEdgeProgress({});
     setActiveNode("webhook");
     setVisibleNodes(new Set(["webhook"]));
-    setParticles([]);
     setBadges(new Set());
     particleState.current = {};
     activeEdges.current = [];
+    const g = particleGroupRef.current;
+    if (g) while (g.firstChild) g.removeChild(g.firstChild);
     reset();
 
     after(150, () => flashBadge("webhook"));
@@ -339,13 +363,11 @@ export function WorkflowAnimation() {
       after(600, () => {
         setActiveNode(null);
 
-        // Reveal OpenAI branch nodes immediately
         setVisibleNodes(prev => new Set([...prev, "email", "tiktok", "youtube"]));
 
         const { x, y } = graphCenter();
         moveTo(x, y, 0.68, 1500);
 
-        // OpenAI fan-out — draws immediately
         const openAiFanEdges: [string, number][] = [
           ["openai-email",   0],
           ["openai-tiktok",  120],
@@ -353,7 +375,6 @@ export function WorkflowAnimation() {
         ];
         openAiFanEdges.forEach(([id, delay]) => after(delay, () => drawEdge(id, 680)));
 
-        // OpenAI fan badges
         const openAiFanBadges: [string, number][] = [
           ["email",   780],
           ["tiktok",  900],
@@ -361,7 +382,6 @@ export function WorkflowAnimation() {
         ];
         openAiFanBadges.forEach(([id, delay]) => after(delay, () => flashBadge(id)));
 
-        // Sheets branch — delayed, builds as we're zooming out
         after(900, () => {
           setVisibleNodes(prev => new Set([...prev, "sheets"]));
           drawEdge("filter-sheets", 750);
@@ -380,27 +400,40 @@ export function WorkflowAnimation() {
           after(700, () => flashBadge("slack"));
         });
 
-        // Start all particles once everything is built
         after(3000, () => {
           startParticles(EDGES.map(e => `${e.from}-${e.to}`));
         });
 
-        // Hold for ~4s visible after everything completes, then restart
         loopTimer.current = setTimeout(() => play(), 8000);
       });
     });
   }, [clearAll, reset, moveTo, flashBadge, startParticles]);
 
-  // Auto-start on mount
   useEffect(() => {
-    const t = setTimeout(() => play(), 500);
-    return () => { clearTimeout(t); clearAll(); };
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const wasVisible = isVisible.current;
+        isVisible.current = entry.isIntersecting;
+        if (entry.isIntersecting && !wasVisible) {
+          play();
+        } else if (!entry.isIntersecting && wasVisible) {
+          clearAll();
+        }
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(el);
+
+    const t = setTimeout(() => { if (isVisible.current) play(); }, 500);
+    return () => { observer.disconnect(); clearTimeout(t); clearAll(); };
   }, [play, clearAll]);
 
   const tx = CW/2 - (cam.x + CARD_W/2) * cam.scale;
   const ty = CH/2 - (cam.y + CARD_H/2) * cam.scale;
 
-  const containerRef = useRef<HTMLDivElement>(null);
   const [containerScale, setContainerScale] = useState(1);
 
   useEffect(() => {
@@ -459,7 +492,7 @@ export function WorkflowAnimation() {
                 const key = `${e.from}-${e.to}`;
                 return <Arrow key={key} from={e.from} to={e.to} progress={edgeProgress[key] || 0} />;
               })}
-              {particles.map(p => <Particle key={p.id} from={p.from} to={p.to} t={p.t} />)}
+              <g ref={particleGroupRef} />
             </svg>
 
             {NODES.map(node => (

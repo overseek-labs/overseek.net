@@ -14,22 +14,41 @@ const fade = (delay: number) => ({
 export function Hero() {
   const [offset, setOffset] = useState(0);
   const rafRef = useRef<number>(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const isVisibleRef = useRef(true);
 
   useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+
     const onScroll = () => {
+      if (!isVisibleRef.current) return;
       rafRef.current = requestAnimationFrame(() => {
         setOffset(window.scrollY);
       });
     };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = entry.isIntersecting;
+        if (!entry.isIntersecting) {
+          cancelAnimationFrame(rafRef.current);
+        }
+      },
+      { threshold: 0 }
+    );
+    observer.observe(el);
+
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
+      observer.disconnect();
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
   return (
-    <section className="relative min-h-screen overflow-hidden">
+    <section ref={sectionRef} className="relative min-h-screen overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
         <DotGrid />
         <div className="absolute -right-60 top-0 h-[700px] w-[700px] rounded-full bg-accent/[0.04] blur-[180px]" />

@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 export function DotGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
+  const visibleRef = useRef(true);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -69,6 +70,8 @@ export function DotGrid() {
     };
 
     const draw = (time: number) => {
+      if (!visibleRef.current) return;
+
       const rect = canvas.getBoundingClientRect();
       const w = rect.width;
       const h = rect.height;
@@ -112,11 +115,26 @@ export function DotGrid() {
       animRef.current = requestAnimationFrame(draw);
     };
 
+    const startLoop = () => {
+      cancelAnimationFrame(animRef.current);
+      animRef.current = requestAnimationFrame(draw);
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting;
+        if (entry.isIntersecting) startLoop();
+      },
+      { threshold: 0 }
+    );
+    observer.observe(canvas);
+
     resize();
-    animRef.current = requestAnimationFrame(draw);
+    startLoop();
 
     window.addEventListener("resize", resize);
     return () => {
+      observer.disconnect();
       window.removeEventListener("resize", resize);
       cancelAnimationFrame(animRef.current);
     };
