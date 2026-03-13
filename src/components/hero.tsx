@@ -103,7 +103,7 @@ export function Hero() {
             className="mt-16 flex items-center gap-10 border-t border-border-subtle pt-8"
           >
             {[
-              { val: "8+", label: "Years" },
+              { val: "15+", label: "Years" },
               { val: "50+", label: "Projects" },
               { val: "99.9%", label: "Uptime" },
             ].map((s) => (
