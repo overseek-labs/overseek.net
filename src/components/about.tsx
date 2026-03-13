@@ -30,7 +30,7 @@ export function About() {
               className="absolute -bottom-8 -right-4 grid grid-cols-2 gap-3 lg:-right-8"
             >
               {[
-                { val: "8+", label: "Years" },
+                { val: "15+", label: "Years" },
                 { val: "50+", label: "Projects" },
                 { val: "99.9%", label: "Uptime" },
                 { val: "24/7", label: "Support" },
@@ -75,7 +75,7 @@ export function About() {
                 {
                   n: "01",
                   title: "Senior engineers only",
-                  desc: "No juniors learning on your dime. Every team member has 5+ years of battle-tested production experience.",
+                  desc: "No juniors learning on your dime. Every team member has 10+ years of battle-tested production experience.",
                 },
                 {
                   n: "02",
