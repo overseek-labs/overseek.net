@@ -8,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: "https://overseek.net/sitemap.xml",
+    sitemap: "https://www.overseek.net/sitemap.xml",
   };
 }
