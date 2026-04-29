@@ -144,6 +144,23 @@
 }
 
 
+/* rehype-pretty-code syntax highlighting */
+[data-rehype-pretty-code-figure] {
+  @apply my-6;
+}
+[data-rehype-pretty-code-figure] pre {
+  @apply overflow-x-auto rounded-xl border border-border-subtle bg-surface p-5 text-sm leading-relaxed;
+}
+[data-rehype-pretty-code-figure] pre code {
+  @apply font-mono;
+}
+[data-rehype-pretty-code-title] {
+  @apply rounded-t-xl border border-b-0 border-border-subtle bg-surface-raised px-4 py-2 font-mono text-xs text-text-muted;
+}
+[data-rehype-pretty-code-title] + pre {
+  @apply rounded-t-none;
+}
+
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-33.333%); }
