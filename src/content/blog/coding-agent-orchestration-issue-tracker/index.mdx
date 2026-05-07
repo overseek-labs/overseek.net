@@ -1,0 +1,84 @@
+---
+title: "Coding agent orchestration is moving into the issue tracker"
+description: "Coding agent orchestration is shifting from chat sessions to issue trackers. Here is why Codex Symphony, GitHub agent workflows, and review bottlenecks point to a new control plane."
+date: "2026-05-05"
+author: "timotei-mierlut"
+tags: ["AI agents", "developer tooling", "software engineering", "agent orchestration"]
+keywords: ["coding agent orchestration", "issue tracker agents", "AI coding agents", "agent control plane", "Codex Symphony"]
+relatedSlugs: []
+coverImage: "/assets/images/blog/coding-agent-orchestration-issue-tracker/hero.jpg"
+---
+
+Start with a boring ticket.
+
+`BUG-1842` says the session timeout warning appears after logout. It has a repo link, a failing Playwright check, a note that the auth service is off limits, and two labels: `ready-for-agent` and `frontend-only`. An agent picks it up, opens `fix/bug-1842-timeout-banner`, patches the React state, and opens a PR. CI comes back half red. Unit tests pass. One browser test fails because the fixture changed last night. The reviewer now needs three answers before approving anything: did the agent touch the right files, did it already retry the flaky test, and is the failure real or noise?
+
+That scene explains the current shift better than any model benchmark. Once agents can produce code on demand, the hard part stops being code generation and starts being coordination. OpenAI's new Symphony spec is built around that idea. It maps open tasks to agents and keeps watching issue state while work moves through retries and dependent tasks ([OpenAI](https://openai.com/index/open-source-codex-orchestration-symphony)). GitHub is moving along the same path from inside the IDE. Its April Visual Studio update launches cloud agent sessions that can open GitHub issues and pull requests remotely, and adds a debugger agent meant to validate behavior against a live runtime path ([GitHub changelog](https://github.blog/changelog/2026-04-30-github-copilot-in-visual-studio-april-update/)).
+
+## Chat breaks on handoffs
+
+Chat is still useful when one engineer is working a bug in real time. Paste the traceback, ask for a quick patch, argue about the fix, move on.
+
+The trouble starts when the task lasts longer than the chat window. One agent transcript says it already ran `pnpm test auth-session`. The branch name suggests it touched auth middleware. The PR only shows a UI diff. CI links to a failed `e2e-firefox` job. The product owner asks whether the ticket is done or blocked. Nobody has a single place that answers all of that cleanly.
+
+A tracker does. The issue can hold the acceptance check, the allowed scope, the escalation owner, and the current state. Labels like `waiting-on-secret`, `needs-rebase`, `awaiting-review`, and `human-decision` sound mundane, but they stop a lot of wasted motion. If an agent hits a permission error on the first attempt, the ticket should move to `human-decision` and stay there. It should not burn four more retries against a repo it cannot write to.
+
+That is the big advantage of issue-based orchestration: it gives the next human enough state to act without replaying a transcript.
+
+## The ticket is becoming the durable unit of work
+
+OpenAI is fairly explicit here. In the Symphony write-up, the system watches the board, attaches agents to active tasks, restarts stalled work, and can split larger projects into dependent tasks. The interesting part is the choice of what persists.
+
+A chat session is fragile. It disappears into tabs, personal context, and half-remembered prompts. A ticket survives handoffs. It can say that task `API-233` is blocked because the migration on `main` changed the contract. It can show that the first agent opened a PR, the second agent rebased it, and the third run stopped after failing `go test ./...` on a missing mock. Humans already know how to work with that kind of record because teams have been doing it for years.
+
+That matters because agents increase the number of in-flight changes before teams fix the supervision layer. A human might juggle two branches comfortably. An agent system can open eight small PRs before lunch, all with different CI states, different reviewers, and different failure modes. If a workflow cannot mark one task as `blocked-on-schema` and another as `safe-to-merge-after-green`, the queue gets messy fast.
+
+The pain lands on the reviewer first. Reviewers are the ones trying to work out whether a diff is incomplete, whether a failing check is unrelated, and whether the agent quietly widened scope after a rebase. Tim O'Reilly made a similar point after Anthropic's Cat Wu spoke about agentic coding and code review at Codecon: faster generation does not remove the verification bottleneck ([O'Reilly Radar](https://www.oreilly.com/radar/everyones-an-engineer-now/)).
+
+## What breaks in practice
+
+The failure mode is rarely "the model cannot code." It is usually one of the boring workflow failures below.
+
+A ticket does not specify the acceptance test, so the agent runs the full suite and spends 40 minutes burning CI minutes on unrelated checks.
+
+A repo permission is too broad, so the agent edits generated files, updates a lockfile, and sneaks a formatting churn into a one-line fix.
+
+A stale branch gets auto-rebased after lunch, but the diff doubles in size because `main` picked up a migration. Now the reviewer has to inspect code the original ticket never asked for.
+
+The logs live in three places: the agent transcript, the CI job page, and a PR comment. Nobody sees the full trail, so the same failed retry gets repeated by a different operator.
+
+The handoff state is vague. The issue says "in progress," but nobody knows whether that means "waiting for green CI," "needs human credentials," or "agent gave up after two retries."
+
+None of this is glamorous, but it is where trust gets decided. If teams adopt agents without fixing task state, they get faster queue pollution instead of an autonomous engineering loop.
+
+## What to test before you buy the story
+
+Don't start with a greenfield demo where an agent closes a toy bug from a clean prompt.
+
+Start with a narrow class of work that your team already finds annoying but safe enough to delegate. Good candidates are dependency bumps, flaky test cleanup, docs fixes with code samples, or small admin UI bugs. Give each ticket a few required fields: repo, allowed directories, acceptance check, escalation owner, and a stop condition for retries.
+
+Then test ugly cases on purpose.
+
+Trigger a stale branch and see whether the agent narrows or widens the diff.
+
+Fail CI on an unrelated check and see whether the system marks the task `awaiting-review` with a note, or keeps retrying blindly.
+
+Remove one permission and see whether the task escalates cleanly to a human, or dies in silence.
+
+Queue five small tickets at once and watch reviewer load. If one senior engineer has to inspect all five PRs because they are the only person who trusts the subsystem, your bottleneck just moved downstream.
+
+That last point matters more than vendor screenshots. OpenAI says some internal teams saw a 500% increase in landed pull requests after moving to this model, but that remains a company claim from a launch post, not an independent benchmark. Even if the directional claim is right, more landed PRs only help if the team can still review, verify, and own the resulting changes.
+
+## What changes for engineering teams
+
+I do not think chat goes away. Teams still need it for brainstorming, debugging weird behavior, exploring a refactor, or talking through a design tradeoff.
+
+But once the work becomes repeatable, the tracker starts to matter more than the conversation. The winning setup will probably look less like "best coding chatbot" and more like "least confusing recovery path after the first failed run." Can the ticket show who owns the task, why the agent stopped, which logs matter, and what a human must decide next? Can a reviewer tell in 30 seconds whether the branch is safe to inspect? Can the system stop an agent from retrying forever on a secret it will never receive?
+
+That is where the real product gap will show up.
+
+The teams that benefit first are likely to be the ones with decent operational hygiene already. They keep labels honest. They know which CI checks block merge. They can define repo scope without hand-waving. They have a review queue that can absorb more PRs without collapsing.
+
+The teams that struggle will fail because their task state is sloppy, their permissions are fuzzy, and their review process depends on tribal memory.
+
+Agents are pushing that mess into view. The issue tracker is where it becomes visible.

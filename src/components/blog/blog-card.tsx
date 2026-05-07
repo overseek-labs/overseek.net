@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Clock } from "lucide-react";
 import type { Post } from "@/lib/blog-types";
@@ -30,53 +31,71 @@ export function BlogCard({ post, index = 0 }: BlogCardProps) {
     >
       <Link
         href={`/blog/${slug}`}
-        className="group flex h-full flex-col rounded-2xl border border-border-subtle bg-surface p-6 transition-all duration-300 hover:border-accent/20 hover:shadow-lg hover:shadow-black/5"
+        className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border-subtle bg-surface transition-all duration-300 hover:border-accent/20 hover:shadow-lg hover:shadow-black/5"
       >
-        {primaryTag && (
-          <span className="mb-4 inline-flex w-fit items-center rounded-full bg-accent-light px-3 py-1 text-xs font-medium text-accent">
-            {primaryTag}
-          </span>
+        {frontmatter.coverImage && (
+          <div className="relative aspect-[16/10] overflow-hidden border-b border-border-subtle bg-accent-light/40">
+            <Image
+              src={frontmatter.coverImage}
+              alt={frontmatter.title}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          </div>
         )}
 
-        <h2 className="mb-2 text-lg font-bold leading-snug text-text-primary transition-colors group-hover:text-accent line-clamp-2">
-          {frontmatter.title}
-        </h2>
+        <div className="flex flex-1 flex-col p-6">
+          {primaryTag && (
+            <span className="mb-4 inline-flex w-fit items-center rounded-full bg-accent-light px-3 py-1 text-xs font-medium text-accent">
+              {primaryTag}
+            </span>
+          )}
 
-        <p className="mb-5 flex-1 text-sm leading-relaxed text-text-secondary line-clamp-3">
-          {frontmatter.description}
-        </p>
+          <h2 className="mb-2 text-lg font-bold leading-snug text-text-primary transition-colors group-hover:text-accent line-clamp-2">
+            {frontmatter.title}
+          </h2>
 
-        <div className="flex items-center justify-between border-t border-border-subtle pt-4">
-          <div className="flex items-center gap-2">
-            {author?.image ? (
-              <img
-                src={author.image}
-                alt={author.name}
-                className="h-7 w-7 rounded-full object-cover"
-              />
-            ) : (
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent-light text-xs font-bold text-accent">
-                {author?.name
-                  ?.split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .slice(0, 2) ?? "O"}
+          <p className="mb-5 flex-1 text-sm leading-relaxed text-text-secondary line-clamp-3">
+            {frontmatter.description}
+          </p>
+
+          <div className="flex items-center justify-between gap-4 border-t border-border-subtle pt-4">
+            <div className="flex min-w-0 items-center gap-2">
+              {author?.image ? (
+                <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
+                  <Image
+                    src={author.image}
+                    alt={author.name}
+                    fill
+                    className="object-cover"
+                    sizes="28px"
+                  />
+                </div>
+              ) : (
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent-light text-xs font-bold text-accent">
+                  {author?.name
+                    ?.split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .slice(0, 2) ?? "O"}
+                </span>
+              )}
+              <span className="truncate text-xs font-medium text-text-secondary">
+                {author?.name ?? "Overseek"}
               </span>
-            )}
-            <span className="text-xs font-medium text-text-secondary">
-              {author?.name ?? "Overseek"}
-            </span>
-          </div>
+            </div>
 
-          <div className="flex items-center gap-3 text-xs text-text-muted">
-            <span className="flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
-              {formatDate(frontmatter.date)}
-            </span>
-            <span className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              {readingTime}
-            </span>
+            <div className="flex shrink-0 items-center gap-3 text-xs text-text-muted">
+              <span className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                {formatDate(frontmatter.date)}
+              </span>
+              <span className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {readingTime}
+              </span>
+            </div>
           </div>
         </div>
       </Link>
