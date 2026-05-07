@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-const links = [
+const homeLinks = [
   { label: "Services", href: "#services" },
   { label: "Work", href: "#work" },
   { label: "About", href: "#about" },
@@ -14,6 +16,13 @@ const links = [
 export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+
+  const links = homeLinks.map((l) => ({
+    ...l,
+    href: isHome ? l.href : `/${l.href}`,
+  }));
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 30);
@@ -51,8 +60,18 @@ export function Navigation() {
                 {l.label}
               </a>
             ))}
+            <Link
+              href="/blog"
+              className={`text-[13px] font-medium transition-colors hover:text-text-primary ${
+                pathname.startsWith("/blog")
+                  ? "text-accent"
+                  : "text-text-secondary"
+              }`}
+            >
+              Blog
+            </Link>
             <a
-              href="#contact"
+              href={isHome ? "#contact" : "/#contact"}
               className="rounded-full bg-accent px-5 py-2 text-[13px] font-semibold text-white transition-all duration-300 hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/15"
             >
               Contact Us
@@ -92,12 +111,25 @@ export function Navigation() {
                 {l.label}
               </motion.a>
             ))}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: links.length * 0.06 }}
+            >
+              <Link
+                href="/blog"
+                onClick={() => setOpen(false)}
+                className="text-xl font-bold text-text-primary"
+              >
+                Blog
+              </Link>
+            </motion.div>
             <motion.a
-              href="#contact"
+              href={isHome ? "#contact" : "/#contact"}
               onClick={() => setOpen(false)}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: (links.length + 1) * 0.06 }}
               className="mt-2 rounded-full bg-accent px-7 py-3 font-semibold text-white"
             >
               Contact Us
