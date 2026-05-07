@@ -10,7 +10,7 @@ const projects = [
     description:
       "A sophisticated RAG platform transforming customer support through intelligent AI agents. Multi-channel deployment across web, Slack, and WhatsApp with 95%+ accuracy and enterprise-grade security.",
     tags: ["RAG", "LLM", "NLP", "React", "Node.js"],
-    image: "/images/work-mojar.jpg",
+    image: "/images/work-mojar.png",
     href: "https://www.mojar.ai/",
   },
   {
@@ -55,11 +55,6 @@ export function Work() {
 
         <div className="grid gap-6 lg:grid-cols-2">
           {projects.map((p, i) => {
-            const Wrapper = p.href ? "a" : "div";
-            const linkProps = p.href
-              ? { href: p.href, target: "_blank" as const, rel: "noopener noreferrer" }
-              : {};
-
             return (
               <motion.div
                 key={p.title}
@@ -68,10 +63,7 @@ export function Work() {
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] as const }}
               >
-                <Wrapper
-                  {...linkProps}
-                  className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border-subtle bg-surface shadow-sm transition-all duration-500 hover:shadow-lg hover:shadow-black/[0.06]"
-                >
+                <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border-subtle bg-surface shadow-sm transition-all duration-500 hover:shadow-lg hover:shadow-black/[0.06]">
                   <div className="p-3 pb-0">
                     <ImageFrame
                       src={p.image}
@@ -89,17 +81,28 @@ export function Work() {
                       <span className="font-[family-name:var(--font-mono)] text-[11px] tracking-[0.15em] text-accent uppercase">
                         {p.category}
                       </span>
-                      {p.href && (
-                        <svg
-                          className="h-4 w-4 text-text-muted transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent"
-                          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
-                        </svg>
-                      )}
                     </div>
                     <h3 className="text-xl font-black tracking-tight text-text-primary lg:text-2xl">
-                      {p.title}
+                      {p.href ? (
+                        <a
+                          href={p.href}
+                          target="_blank"
+                          rel="nofollow noopener noreferrer"
+                          aria-label={p.title}
+                          className="inline-flex items-center gap-2 transition-colors duration-300 hover:text-accent"
+                        >
+                          <span>{p.title}</span>
+                          <svg
+                            className="h-4 w-4 text-text-muted transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}
+                            aria-hidden="true"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                          </svg>
+                        </a>
+                      ) : (
+                        p.title
+                      )}
                     </h3>
                     <p className="mt-2 flex-1 text-sm leading-relaxed text-text-secondary">
                       {p.description}
@@ -115,7 +118,7 @@ export function Work() {
                       ))}
                     </div>
                   </div>
-                </Wrapper>
+                </div>
               </motion.div>
             );
           })}
