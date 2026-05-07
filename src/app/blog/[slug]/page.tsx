@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
@@ -87,6 +88,8 @@ export default async function ArticlePage({
   const seriesPosts = frontmatter.series
     ? getSeriesPosts(frontmatter.series)
     : [];
+  const hasCoverImage = Boolean(frontmatter.coverImage);
+  const coverImageSrc = frontmatter.coverImageSrc ?? frontmatter.coverImage;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -119,47 +122,74 @@ export default async function ArticlePage({
 
       <div className="min-h-screen bg-base pt-24 pb-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-12">
-          <div className="mx-auto max-w-3xl xl:mx-0 xl:grid xl:max-w-none xl:grid-cols-[1fr_280px] xl:gap-16">
-            {/* Main content */}
-            <div>
-              {/* Series banner */}
-              {frontmatter.series && seriesPosts.length > 1 && (
-                <SeriesBanner
-                  series={frontmatter.series}
-                  seriesOrder={frontmatter.seriesOrder ?? 1}
-                  totalInSeries={seriesPosts.length}
-                  posts={seriesPosts}
-                  currentSlug={slug}
-                />
-              )}
+          {/* Series banner */}
+          {frontmatter.series && seriesPosts.length > 1 && (
+            <div className="mx-auto mb-6 max-w-3xl xl:mx-0">
+              <SeriesBanner
+                series={frontmatter.series}
+                seriesOrder={frontmatter.seriesOrder ?? 1}
+                totalInSeries={seriesPosts.length}
+                posts={seriesPosts}
+                currentSlug={slug}
+              />
+            </div>
+          )}
 
-              {/* Header */}
-              <header className="mb-10">
-                <div className="mb-4 flex flex-wrap gap-2">
+          {/* Header */}
+          <header
+            className={`relative mb-16 overflow-hidden rounded-[2rem] border border-border-subtle bg-surface ${
+              hasCoverImage
+                ? "min-h-[560px] shadow-[0_30px_90px_rgba(107,66,38,0.12)] lg:mb-20 lg:min-h-[620px]"
+                : "p-8 sm:p-10 lg:p-12"
+            }`}
+          >
+            {frontmatter.coverImage && (
+              <>
+                <Image
+                  src={coverImageSrc ?? frontmatter.coverImage}
+                  alt=""
+                  aria-hidden="true"
+                  fill
+                  priority
+                  sizes="100vw"
+                  className="absolute inset-0 h-full w-full object-cover object-[62%_center]"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,#FAFAF8_0%,rgba(250,250,248,0.94)_30%,rgba(250,250,248,0.58)_50%,rgba(250,250,248,0.14)_72%,rgba(250,250,248,0.02)_100%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_19%_28%,rgba(255,255,255,0.64),transparent_34%),linear-gradient(180deg,rgba(250,250,248,0.1)_0%,rgba(250,250,248,0.18)_100%)] md:bg-[radial-gradient(circle_at_19%_28%,rgba(255,255,255,0.58),transparent_35%)]" />
+              </>
+            )}
+
+            <div
+              className={`relative z-10 flex flex-col ${
+                hasCoverImage
+                  ? "min-h-[560px] px-6 pt-20 pb-8 sm:px-10 sm:pt-24 lg:min-h-[620px] lg:px-16 lg:pt-28 lg:pb-12"
+                  : ""
+              }`}
+            >
+              <div className="max-w-3xl">
+                <div className="mb-7 flex flex-wrap gap-2">
                   {frontmatter.tags.map((tag) => (
                     <a
                       key={tag}
                       href={`/blog/tag/${tag}`}
-                      className="inline-flex items-center rounded-full bg-accent-light px-3 py-1 text-xs font-medium text-accent transition-colors hover:bg-accent hover:text-white"
+                      className="inline-flex items-center rounded-full bg-white/55 px-4 py-1.5 text-xs font-medium text-accent shadow-sm ring-1 ring-accent/5 backdrop-blur-md transition-colors hover:bg-accent hover:text-white"
                     >
                       {tag}
                     </a>
                   ))}
                 </div>
 
-                <h1 className="mb-4 text-3xl font-black leading-tight tracking-tight text-text-primary lg:text-4xl">
+                <h1 className="mb-6 max-w-2xl text-4xl font-black leading-[0.98] tracking-[-0.055em] text-text-primary sm:text-5xl lg:text-6xl">
                   {frontmatter.title}
                 </h1>
 
-                <p className="mb-6 text-lg leading-relaxed text-text-secondary">
+                <p className="mb-10 max-w-2xl text-lg leading-8 text-[#5A534D] sm:text-xl">
                   {frontmatter.description}
                 </p>
 
-                <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle pb-6">
-                  <div className="flex items-center gap-4">
-                    {author && <AuthorCard author={author} compact />}
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-text-muted">
+                <div className="flex max-w-2xl flex-col gap-4 border-t border-accent/10 pt-6 sm:flex-row sm:flex-wrap sm:items-center">
+                  {author && <AuthorCard author={author} compact />}
+                  <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-[#6B625A] sm:ml-4">
                     <span className="flex items-center gap-1.5">
                       <Calendar className="h-4 w-4" />
                       {formatDate(frontmatter.date)}
@@ -168,21 +198,19 @@ export default async function ArticlePage({
                       <Clock className="h-4 w-4" />
                       {readingTime}
                     </span>
-                    <ShareButtons title={frontmatter.title} slug={slug} />
                   </div>
                 </div>
-              </header>
+              </div>
 
-              {/* Cover image */}
-              {frontmatter.coverImage && (
-                <div className="mb-10 overflow-hidden rounded-2xl">
-                  <img
-                    src={frontmatter.coverImage}
-                    alt={frontmatter.title}
-                    className="aspect-video w-full object-cover"
-                  />
-                </div>
-              )}
+              <div className="mt-auto flex justify-start pt-8 sm:absolute sm:right-8 sm:bottom-8 lg:right-12 lg:bottom-12">
+                <ShareButtons title={frontmatter.title} slug={slug} variant="hero" />
+              </div>
+            </div>
+          </header>
+
+          <div className="mx-auto max-w-3xl xl:mx-0 xl:grid xl:max-w-none xl:grid-cols-[minmax(0,1fr)_280px] xl:gap-16 xl:px-12 2xl:px-4">
+            {/* Main content */}
+            <div className="max-w-3xl">
 
               {/* Article body */}
               <article className="prose-content">
@@ -211,7 +239,7 @@ export default async function ArticlePage({
 
             {/* Sidebar TOC – desktop only */}
             <aside className="hidden xl:block">
-              <div className="sticky top-28">
+              <div className="sticky top-28 rounded-3xl border border-border-subtle bg-surface/70 p-7 shadow-[0_24px_70px_rgba(107,66,38,0.08)] backdrop-blur-xl">
                 <TableOfContents />
               </div>
             </aside>

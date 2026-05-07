@@ -17,6 +17,7 @@ export function BlogCard({ post, index = 0 }: BlogCardProps) {
   const { frontmatter, slug, readingTime } = post;
   const author = lookupAuthor(frontmatter.author);
   const primaryTag = frontmatter.tags[0];
+  const coverImageSrc = frontmatter.coverImageSrc ?? frontmatter.coverImage;
 
   return (
     <motion.article
@@ -36,7 +37,7 @@ export function BlogCard({ post, index = 0 }: BlogCardProps) {
         {frontmatter.coverImage && (
           <div className="relative aspect-[16/10] overflow-hidden border-b border-border-subtle bg-accent-light/40">
             <Image
-              src={frontmatter.coverImage}
+              src={coverImageSrc ?? frontmatter.coverImage}
               alt={frontmatter.title}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"

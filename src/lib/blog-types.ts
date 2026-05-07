@@ -15,6 +15,7 @@ export interface PostFrontmatter {
   relatedSlugs: string[];
   faq: PostFaq[];
   coverImage?: string;
+  coverImageSrc?: string;
   author: string;
 }
 

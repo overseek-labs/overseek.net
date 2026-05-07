@@ -10,6 +10,22 @@ import type { Post } from "./blog-types";
 
 const CONTENT_DIR = path.join(process.cwd(), "src/content/blog");
 
+function withPublicAssetVersion(src?: string): string | undefined {
+  if (!src?.startsWith("/")) return src;
+
+  const [pathname, query = ""] = src.split("?");
+  const publicPath = path.join(process.cwd(), "public", pathname);
+
+  try {
+    const stats = fs.statSync(publicPath);
+    const version = `${Math.trunc(stats.mtimeMs)}-${stats.size}`;
+    const separator = query ? "&" : "?";
+    return `${src}${separator}v=${version}`;
+  } catch {
+    return src;
+  }
+}
+
 export function getAllSlugs(): string[] {
   if (!fs.existsSync(CONTENT_DIR)) return [];
   return fs.readdirSync(CONTENT_DIR).filter((dir) =>
@@ -24,10 +40,14 @@ export function getPostBySlug(slug: string): Post | null {
   const raw = fs.readFileSync(filePath, "utf-8");
   const { data, content } = matter(raw);
   const rt = readingTime(content);
+  const frontmatter = data as Post["frontmatter"];
 
   return {
     slug,
-    frontmatter: data as Post["frontmatter"],
+    frontmatter: {
+      ...frontmatter,
+      coverImageSrc: withPublicAssetVersion(frontmatter.coverImage),
+    },
     content,
     readingTime: `${Math.ceil(rt.minutes)} min read`,
   };

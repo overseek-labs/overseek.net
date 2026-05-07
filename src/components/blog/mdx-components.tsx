@@ -28,7 +28,7 @@ export const mdxComponents: MDXComponents = {
     </h4>
   ),
   p: ({ children }) => (
-    <p className="mb-5 leading-7 text-text-secondary">{children}</p>
+    <p className="mb-5 leading-7 text-[#4F4944]">{children}</p>
   ),
   a: ({ href, children }) => (
     <Link
@@ -39,18 +39,18 @@ export const mdxComponents: MDXComponents = {
     </Link>
   ),
   ul: ({ children }) => (
-    <ul className="mb-5 list-disc space-y-1.5 pl-5 text-text-secondary marker:text-accent">
+    <ul className="mb-5 list-disc space-y-1.5 pl-5 text-[#4F4944] marker:text-accent">
       {children}
     </ul>
   ),
   ol: ({ children }) => (
-    <ol className="mb-5 list-decimal space-y-1.5 pl-5 text-text-secondary marker:text-accent">
+    <ol className="mb-5 list-decimal space-y-1.5 pl-5 text-[#4F4944] marker:text-accent">
       {children}
     </ol>
   ),
   li: ({ children }) => <li className="leading-7">{children}</li>,
   blockquote: ({ children }) => (
-    <blockquote className="my-6 border-l-4 border-accent pl-5 text-text-secondary italic">
+    <blockquote className="my-6 border-l-4 border-accent pl-5 text-[#4F4944] italic">
       {children}
     </blockquote>
   ),
