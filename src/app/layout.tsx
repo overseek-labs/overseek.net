@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
 const satoshi = localFont({
@@ -172,6 +173,9 @@ export default function RootLayout({
         <div className="grain-overlay" />
         {children}
       </body>
+      {process.env.NODE_ENV === "production" && process.env.NEXT_PUBLIC_GA_ID && (
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+      )}
     </html>
   );
 }
