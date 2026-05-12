@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
       {
         pathname: "/assets/images/**",
       },
+      {
+        pathname: "/images/**",
+      },
     ],
   },
   reactCompiler: true,
